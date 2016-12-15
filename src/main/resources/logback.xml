@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<configuration>
+
+    <!--定义一个名为STDOUT的appender，并将其关联到ch.qos.logback.core.ConsoleAppender-->
+    <appender name="STDOUT"
+              class="ch.qos.logback.core.ConsoleAppender">
+        <!-- encoders 作用是将logger事件转换成字节数组，并将字节数组写入到输出流-->
+        <encoder>
+            <!--格式化输出：%d表示日期，%thread表示线程名，%-5level：级别从左显示5个字符宽度 %msg：日志消息，%n是换行符-->
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+        </encoder>
+    </appender>
+    <!-- 按照每天生成日志文件 -->
+    <appender name="FILE"  class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <Encoding>UTF-8</Encoding>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <FileNamePattern>${catalina.home:-.}/logs/%d{yyyy-MM-dd}.log</FileNamePattern>
+            <MaxHistory>10</MaxHistory>
+        </rollingPolicy>
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{50} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+	<logger name="org.apache.http" level="ERROR" /><!--设置zookeeper的打印-->
+	<logger name="org.apache.zookeeper" level="ERROR" /><!--设置zookeeper的打印-->
+    <logger name="io.netty" level="DEBUG"></logger>
+    <root level="DEBUG">    <!-- root logger，定义级别为debug-->
+        <appender-ref ref="STDOUT"/>
+        <!-- 默认只按天生成日志 -->
+        <appender-ref ref="FILE" />
+    </root>
+</configuration>

@@ -1,0 +1,42 @@
+##mode:client;server;none
+mode: client
+
+##proxy:socks;forward
+proxy: socks
+
+##client proxy config
+forwardServerConfig:
+  bossThreads: 1
+  workerThreads: 0
+  host: 172.16.192.203
+  port: 1080
+
+##cmd server config
+cmdServerConfig:
+  bossThreads: 1
+  workerThreads: 0
+  host: 172.16.192.203
+  port: 1081
+
+##transmit config
+socksServerConfig:
+  bossThreads: 1
+  workerThreads: 0
+  host: 172.16.192.203
+  port: 6010
+
+##transmit connector share
+channelConfig:
+  tcpNoDelay: true
+  tcpSendBufferSize: -1
+  tcpReceiveBufferSize: -1
+  tcpKeepAlive: false
+  soLinger: -1
+  reuseAddress: false
+  acceptBackLog: 1024
+
+##thread pool config
+threadPoolConfig:
+  corePoolSize: 2
+  maximumPoolSize: 10
+  keepAliveTime: 120000
