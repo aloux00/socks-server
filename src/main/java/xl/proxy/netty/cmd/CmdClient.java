@@ -14,6 +14,7 @@ import io.netty.handler.codec.LengthFieldBasedFrameDecoder;
 import io.netty.handler.codec.LengthFieldPrepender;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
+import io.netty.handler.timeout.ReadTimeoutHandler;
 import io.netty.util.concurrent.GenericFutureListener;
 import io.netty.util.concurrent.Promise;
 import xl.proxy.netty.runtime.SystemContext;
@@ -35,6 +36,7 @@ public class CmdClient {
 								@Override
 								protected void initChannel(Channel ch) throws Exception {
 									ch.pipeline().addLast("loggingHandler", new LoggingHandler(LogLevel.INFO));
+									ch.pipeline().addLast("readtimeout", new ReadTimeoutHandler(5));
 									ch.pipeline().addLast("lengthDecoder", new LengthFieldBasedFrameDecoder(65535, 0, 2, 0, 2));
 									ch.pipeline().addLast("lengthEncoder", new LengthFieldPrepender(2));
 									ch.pipeline().addLast("cmdDecode", new CmdDecode());
@@ -54,12 +56,16 @@ public class CmdClient {
 								logger.info("cmd client started");
 								
 							} else {
+								promise.setFailure(future.cause());
 								logger.error("cmd client failed", future.cause());
 							}
 						}
 					});
 					// 等待服务端监听端口关闭
 					future.channel().closeFuture().syncUninterruptibly();
+				} catch (Exception e) {
+					logger.error("cmd client failed", e);
+					promise.setFailure(e);
 				} finally {
 					workerGroup.shutdownGracefully();
 				}
