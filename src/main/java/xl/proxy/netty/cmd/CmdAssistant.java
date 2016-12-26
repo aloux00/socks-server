@@ -100,7 +100,7 @@ public class CmdAssistant {
 			throw new RuntimeException("illegal request, acquire bridge from server !!!");
 		}
 		ByteBuf encoded = cmdChannel.alloc().buffer(commandLength());
-		final Integer no = NO.getAndIncrement();
+		final Integer no = getAvailableNo();
 		encoded.writeBytes(buildCommandBytes(new Command(CommandEnum.ACQUIRE, no)));
 		logger.info("ACQUIRE cmd begin, no:" + no);
 		final Promise<Object> promise = cmdChannel.eventLoop().newPromise();
@@ -139,7 +139,7 @@ public class CmdAssistant {
 	}
 	
 	public Integer getAvailableNo() {
-		return instance.NO.getAndIncrement();
+		return instance.NO.getAndIncrement() % instance.MAX_NO;
 	}
 
 	public byte[] buildCommandBytes(Command command) {
